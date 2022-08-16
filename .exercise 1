@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 #include <locale.h>
-#define TAM 5
+#define TAM 6
 
 void leitura (int vet[TAM])
 {
