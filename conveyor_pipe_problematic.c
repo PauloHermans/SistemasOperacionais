@@ -9,43 +9,43 @@
 
 struct pipe_ipc
 {
-	int esteira1_ipc[2];
-	int esteira2_ipc[2];
+	int conveyor1_ipc[2];
+	int conveyor2_ipc[2];
 
-	FILE* esteira1_readpoint;
-	FILE* esteira2_readpoint;
+	FILE* conveyor1_readpoint;
+	FILE* conveyor2_readpoint;
 } ipc;
 
 void pipe_ipc_init(void)
 {
 
-	int err  = pipe(ipc.esteira1_ipc);
-	    err |= pipe(ipc.esteira2_ipc);
+	int err  = pipe(ipc.conveyor1_ipc);
+	    err |= pipe(ipc.conveyor2_ipc);
 
 	if (err)
 		error_at_line(-1, errno, __FILE__, __LINE__, "could not open pipes");
 
-	ipc.esteira1_readpoint = fdopen(ipc.esteira1_ipc[0], "r");
-	ipc.esteira2_readpoint = fdopen(ipc.esteira2_ipc[0], "r");
+	ipc.conveyor1_readpoint = fdopen(ipc.conveyor2_ipc[0], "r");
+	ipc.conveyor2_readpoint = fdopen(ipc.conveyor2_ipc[0], "r");
 
 	return;
 }
 
-void task_esteira1(void)
+void task_conveyor1(void)
 {
 
 	while (true)
-		dprintf(ipc.esteira1_ipc[1], "%lf\n", ESTEIRA1_ITEM_WEIGHT),
-		usleep(ESTEIRA1_WAIT_TIME);
+		dprintf(ipc.conveyor1_ipc[1], "%lf\n", CONVEYOR1_ITEM_WEIGHT),
+		usleep(CONVEYOR1_WAIT_TIME);
 
 }
 
-void task_esteira2(void)
+void task_conveyor2(void)
 {
 
 	while (true)
-		dprintf(ipc.esteira2_ipc[1], "%lf\n", ESTEIRA2_ITEM_WEIGHT),
-		usleep(ESTEIRA2_WAIT_TIME);
+		dprintf(ipc.conveyor2_ipc[1], "%lf\n", CONVEYOR2_ITEM_WEIGHT),
+		usleep(CONVEYOR2_WAIT_TIME);
 
 }
 
@@ -56,22 +56,22 @@ int main(void)
 
 	pipe_ipc_init();
 
-	int pid_esteira1 = fork();
-	if (pid_esteira1 == 0) task_esteira1();
-	int pid_esteira2 = fork();
-	if (pid_esteira2 == 0) task_esteira2();
+	int pid_conveyor1 = fork();
+	if (pid_conveyor1 == 0) task_conveyor1();
+	int pid_conveyor2 = fork();
+	if (pid_conveyor2 == 0) task_conveyor2();
 
 	while (true)
 	{
 
 		usleep(CONTROLLER_WAIT_TIME);
 
-		double esteira1_res, esteira2_res;
-		fscanf(ipc.esteira1_readpoint, "%lf\n", &esteira1_res);
-		fscanf(ipc.esteira2_readpoint, "%lf\n", &esteira2_res);
+		double conveyor1_res, conveyor2_res;
+		fscanf(ipc.conveyor1_readpoint, "%lf\n", &conveyor1_res);
+		fscanf(ipc.conveyor2_readpoint, "%lf\n", &conveyor2_res);
 
-		data_apply_values(esteira1_res);
-		data_apply_values(esteira2_res);
+		data_apply_values(conveyor1_res);
+		data_apply_values(conveyor2_res);
 
 		display_update_count();
 		display_print_display();
