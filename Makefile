@@ -10,7 +10,7 @@ TIMING_CARGS = -DTIMING
 endif
 
 CC    = cc
-CARGS = -std=c2x -Wall -Wextra $(DEBUG_CARGS) $(TIMING_CARGS)
+CARGS = -std=c11 -Wall -Wextra $(DEBUG_CARGS) $(TIMING_CARGS)
 LIBS  = -lpthread -lrt
 
 .PHONY: clean default
