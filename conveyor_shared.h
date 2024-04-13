@@ -26,4 +26,16 @@ void display_update_weight(void);
 void display_update_count (void);
 void data_apply_values    (double weight);
 
+#ifdef    TIMING
+
+#include <time.h>
+
+extern struct timespec conveyor1_timing_old, conveyor1_timing_new;
+extern struct timespec conveyor2_timing_old, conveyor2_timing_new;
+
+void timing_register(struct timespec* t);
+void timing_log     (const char which, struct timespec* a, struct timespec* b);
+
+#endif // TIMING
+
 #endif // CONVEYOR_SHARED_H_

@@ -48,8 +48,21 @@ void task_conveyor1(void)
 {
 
 	while (true)
-		dprintf(ipc.conveyor1_ipc[1], "%lf\n", CONVEYOR1_ITEM_WEIGHT),
+	{
+
+		#ifdef TIMING
+		timing_register(&conveyor1_timing_old);
+		#endif
+
+		dprintf(ipc.conveyor1_ipc[1], "%lf\n", CONVEYOR1_ITEM_WEIGHT);
+
+		#ifdef TIMING
+		timing_register(&conveyor1_timing_new);
+		timing_log('1', &conveyor1_timing_old, &conveyor1_timing_new);
+		#endif
+
 		usleep(CONVEYOR1_WAIT_TIME);
+	}
 
 }
 
@@ -57,8 +70,21 @@ void task_conveyor2(void)
 {
 
 	while (true)
-		dprintf(ipc.conveyor2_ipc[1], "%lf\n", CONVEYOR2_ITEM_WEIGHT),
+	{
+
+		#ifdef TIMING
+		timing_register(&conveyor2_timing_old);
+		#endif
+
+		dprintf(ipc.conveyor2_ipc[1], "%lf\n", CONVEYOR2_ITEM_WEIGHT);
+
+		#ifdef TIMING
+		timing_register(&conveyor2_timing_new);
+		timing_log('2', &conveyor2_timing_old, &conveyor2_timing_new);
+		#endif
+
 		usleep(CONVEYOR2_WAIT_TIME);
+	}
 
 }
 

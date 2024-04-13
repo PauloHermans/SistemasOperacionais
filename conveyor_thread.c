@@ -23,8 +23,21 @@ void* thread_conveyor1(void* param)
 	(void) param;
 
 	while (true)
-		thread_data_apply_values(CONVEYOR1_ITEM_WEIGHT),
+	{
+
+		#ifdef TIMING
+		timing_register(&conveyor1_timing_old);
+		#endif
+
+		thread_data_apply_values(CONVEYOR1_ITEM_WEIGHT);
+
+		#ifdef TIMING
+		timing_register(&conveyor1_timing_new);
+		timing_log('1', &conveyor1_timing_old, &conveyor1_timing_new);
+		#endif
+
 		usleep                  (CONVEYOR1_WAIT_TIME);
+	}
 
 	pthread_exit((void*) -1);
 }
@@ -34,8 +47,21 @@ void* thread_conveyor2(void* param)
 	(void) param;
 
 	while (true)
-		thread_data_apply_values(CONVEYOR2_ITEM_WEIGHT),
+	{
+
+		#ifdef TIMING
+		timing_register(&conveyor2_timing_old);
+		#endif
+
+		thread_data_apply_values(CONVEYOR2_ITEM_WEIGHT);
+
+		#ifdef TIMING
+		timing_register(&conveyor2_timing_new);
+		timing_log('2', &conveyor2_timing_old, &conveyor2_timing_new);
+		#endif
+
 		usleep                  (CONVEYOR2_WAIT_TIME);
+	}
 
 	pthread_exit((void*) -1);
 }
