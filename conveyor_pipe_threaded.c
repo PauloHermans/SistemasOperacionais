@@ -10,6 +10,7 @@
 
 pthread_mutex_t mx = PTHREAD_MUTEX_INITIALIZER;
 
+/* É feito o mesmo bloqueio aqui que é feito no conveyor_thread.c */
 void thread_data_apply_values(double weight)
 {
 
@@ -88,6 +89,7 @@ void task_conveyor2(void)
 
 }
 
+/* Thread de leitura da primeira tarefa */
 void* thread_leitura_conveyor1(void* param)
 {
 
@@ -101,6 +103,7 @@ void* thread_leitura_conveyor1(void* param)
 	pthread_exit((void*) -1);
 }
 
+/* Thread de leitura da segunda tarefa */
 void* thread_leitura_conveyor2(void* param)
 {
 
@@ -140,8 +143,10 @@ int main(void)
 		usleep(CONTROLLER_WAIT_TIME);
 
 		/*
-		fscanf(...);
-		*/
+		 * Os fscanf() foram movidos para suas proprias threads, para que assim
+		 * a leitura dos valores sejam feitas de forma assíncrona. Isto resolve
+		 * ambos problemas citados anteriormente em conveyor_pipe_problematic.
+		 */
 
 		display_update_count();
 		display_print_display();

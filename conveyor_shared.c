@@ -3,12 +3,24 @@
 #include <time.h>
 #include "conveyor_shared.h"
 
+/* 
+ * Definição dos armazenametnos (é uma variavel global 
+ * compartilhada entre varios arquivos C. 
+ */
 struct conveyor_data data    = {0};
 struct conveyor_data display = {0};
 
+/* Updates */
 void display_update_weight(void) { display.accumulated_weight = data.accumulated_weight; }
 void display_update_count (void) { display.items_read         = data.items_read;         }
 
+/* 
+ * Mostra o display na tela
+ * É usado o '\r' invés do '\n' para que o display fique sempre
+ * na mesma linha. Note que é necessário configurar o stdout para
+ * que não trave a saída até o proximo line feed, já que este nunca
+ * será emitido. Veja conveyor_thread.c.
+ */
 void display_print_display(void)
 {
 
@@ -22,6 +34,11 @@ void display_print_display(void)
 	return;
 }
 
+/* 
+ * Acumula o peso especificado e incrementa a contagem de items.
+ * No DISPLAY_UPDATE_WEIGHT_ON_NTH-ésimo item o display de peso
+ * acumulado é automaticamente atualizado.
+ */
 void data_apply_values(double weight)
 {
 
@@ -34,16 +51,40 @@ void data_apply_values(double weight)
 	return;
 }
 
+/* Implementação dos benchmarks */
 #ifdef    TIMING
+/* Armazenamento dos timespecs. */
 struct timespec conveyor1_timing_old, conveyor1_timing_new;
 struct timespec conveyor2_timing_old, conveyor2_timing_new;
 
+/* Popula um timespec com o tempo atual */
 void timing_register(struct timespec* t)
 {
 	clock_gettime(CLOCK_MONOTONIC_RAW, t);
 	return;
 }
 
+/* 
+ * Calcula a diferença entre dois timespecs e loga-o no stderr. 
+ *
+ * TEORIA STDIO:
+ *
+ *   Existem dois caminhos para um "printf" da vida escrever seu texto:
+ *   stdout e stderr. O stdout é o caminho padrão, enquando o stderr é
+ *   dedicado à mensagens de erro. Normalmente, ambos são mostrados no
+ *   mesmo terminal, porém como são duas streams diferentes, é possivel
+ *   redirecionar um e não o outro.
+ *
+ *   Como exemplificado no README.md, este mecanismo é usado para separar
+ *   o display dos dados de benchmark via a funcionalidade de redirecionamento
+ *   do Bash e CMD. Por exemplo, um jeito de separa-los é
+ *
+ *     $ ./conveyor_thread 2> log.txt
+ *     Contagem: ...
+ *     $ cat log.txt
+ *     1: 0.000312...
+ *     2: 0.000167...
+ */
 void timing_log(const char which, struct timespec* a, struct timespec* b)
 {
 	time_t secs = b->tv_sec  - a->tv_sec;
