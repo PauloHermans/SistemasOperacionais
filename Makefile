@@ -1,11 +1,16 @@
-DEBUG_CARGS =
+DEBUG_CARGS  =
+TIMING_CARGS =
 
-ifdef $(DEBUG)
+ifeq ($(DEBUG),1)
 DEBUG_CARGS = -g
 endif
 
+ifeq ($(TIMING),1)
+TIMING_CARGS = -DTIMING
+endif
+
 CC    = cc
-CARGS = -std=c2x -Wall -Wextra $(DEBUG_CARGS)
+CARGS = -std=c2x -Wall -Wextra $(DEBUG_CARGS) $(TIMING_CARGS)
 LIBS  = -lpthread -lrt
 
 .PHONY: clean default
