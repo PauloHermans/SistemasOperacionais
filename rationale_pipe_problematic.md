@@ -26,6 +26,16 @@ O pipe é definitivamente mais lerdo do que a thread: a média é de 23µs,
 mediana de 16.4µs, moda de 16.3µs, desvio padrão de 11µs, máximo de 67µs,
 minimo de 6µs.
 
+[histograma]
+
+Por mais de haver somente uma moda, ainda há uma bipartição dos timings.
+É, no geral, de se esperar que a cada duas instâncias de '16µs', o 
+sistema leve também uma instância de '37µs'.
+
+[diagrama impulso]
+Em geral, o sistema alterna entre 16µs e 37µs, com algumas ilhas de
+estabilidade. Tais ilhas aparentam ser periódicas.
+
 # Método
 
 O benchmark foi realizado em um computador de 8GiB RAM DDR3, processador
