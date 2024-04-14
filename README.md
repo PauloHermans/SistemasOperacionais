@@ -28,3 +28,9 @@ $ cat timing.txt
 ```
 
 Para não emitir informações de profiling, compile novamente sem `TIMING=1`.
+
+# Guia Documentação
+
+A documentação se trata de comentários escritos no próprio código, e devem ser lidos na seguinte ordem: `conveyor_shared.h → conveyor_shared.c → conveyor_thread.c → conveyor_pipe_problematic.c → conveyor_pipe_threaded.c`.
+
+Os arquivos `rationale_xyz.md` contém as observações e resultados estatísticos.
