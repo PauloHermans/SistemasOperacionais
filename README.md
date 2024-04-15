@@ -8,6 +8,8 @@ Link para acesso ao relatório: https://univali-my.sharepoint.com/:w:/r/personal
 
 # Instruções de compilação
 
+### Linux
+
 Para os códigos de plataforma Linux, clone este repo em uma maquina com
 tal sistema operacional, que tenha GCC 11+, GNU Make, e rode:
 ```
@@ -28,6 +30,19 @@ $ cat timing.txt
 ```
 
 Para não emitir informações de profiling, compile novamente sem `TIMING=1`.
+
+### Windows
+
+O código foi feito para ser compilado via o crosscompilador do MinGW do Linux para rodar no Windows.
+Por favor tenha certeza que o MinGW está instalado.
+
+```
+$ make windows_conveyor_thread        TIMING=1
+$ make windows_conveyor_pipe_threaded TIMING=1
+```
+
+Note que não há uma versão `pipe_problematic`. Também note que a precisão do timer provido no Windows é menor do que
+a oferecida no Linux (100ns vs 1ns).
 
 # Guia Documentação
 
