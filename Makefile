@@ -11,7 +11,10 @@ endif
 
 CC    = cc
 CARGS = -std=c11 -Wall -Wextra $(DEBUG_CARGS) $(TIMING_CARGS)
-LIBS  = -lpthread -lrt
+LLIBS = -lpthread -lrt
+WLIBS = -lpthread
+
+WINCC = x86_64-w64-mingw32-gcc
 
 .PHONY: clean default
 
@@ -21,11 +24,17 @@ default:
 clean:
 	rm -vf conveyor_pipe_problematic conveyor_thread conveyor_pipe_threaded
 
-conveyor_pipe_problematic: conveyor_pipe_problematic.c conveyor_shared.c
-	$(CC) $(CARGS) -o $@ $^ $(LIBS)
+conveyor_pipe_problematic: conveyor_pipe_problematic.c conveyor_shared.c conveyor_shared.h
+	$(CC) $(CARGS) -o $@ $^ $(LLIBS)
 
-conveyor_pipe_threaded: conveyor_pipe_threaded.c conveyor_shared.c
-	$(CC) $(CARGS) -o $@ $^ $(LIBS)
+conveyor_pipe_threaded: conveyor_pipe_threaded.c conveyor_shared.c conveyor_shared.h
+	$(CC) $(CARGS) -o $@ $^ $(LLIBS)
 
-conveyor_thread: conveyor_thread.c conveyor_shared.c
-	$(CC) $(CARGS) -o $@ $^ $(LIBS)
+conveyor_thread: conveyor_thread.c conveyor_shared.c conveyor_shared.h
+	$(CC) $(CARGS) -o $@ $^ $(LLIBS)
+
+windows_thread: conveyor_thread.c conveyor_shared.c conveyor_shared.h
+	$(WINCC) $(CARGS) -DWINDOWS -o $@ $^ $(WLIBS) -static
+
+windows_pipe_threaded: conveyor_pipe_threaded.c conveyor_shared.c conveyor_shared.h
+	$(WINCC) $(CARGS) -DWINDOWS -o $@ $^ $(WLIBS) -static

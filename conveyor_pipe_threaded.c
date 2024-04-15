@@ -7,6 +7,10 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include "conveyor_shared.h"
+#ifdef WINDOWS
+#include <windows.h>
+#include <io.h>
+#endif
 
 pthread_mutex_t mx = PTHREAD_MUTEX_INITIALIZER;
 
@@ -23,13 +27,43 @@ void thread_data_apply_values(double weight)
 
 struct pipe_ipc
 {
+	#ifdef WINDOWS
+	HANDLE conveyor1_ipc[2];
+	HANDLE conveyor2_ipc[2];
+
+	FILE* conveyor1_readpoint;
+	FILE* conveyor2_readpoint;
+	#else
 	int conveyor1_ipc[2];
 	int conveyor2_ipc[2];
 
 	FILE* conveyor1_readpoint;
 	FILE* conveyor2_readpoint;
+	#endif
 } ipc;
 
+#ifdef WINDOWS
+void pipe_ipc_init(void)
+{
+
+	SECURITY_ATTRIBUTES attr =
+	{
+		.nLength              = sizeof(SECURITY_ATTRIBUTES),
+		.lpSecurityDescriptor = NULL,
+		.bInheritHandle       = true
+	};
+
+	bool err1 = CreatePipe(&ipc.conveyor1_ipc[0], &ipc.conveyor1_ipc[1], &attr, 0);
+	bool err2 = CreatePipe(&ipc.conveyor2_ipc[0], &ipc.conveyor2_ipc[1], &attr, 0);
+	if  (err1 == 0 || err2 == 0)
+		fprintf(stderr, "error: at %s:%i: could not open pipes\n", __FILE__, __LINE__), exit(-1);
+
+	ipc.conveyor1_readpoint  = _fdopen(_open_osfhandle((intptr_t) ipc.conveyor1_ipc[0], _O_RDONLY), "r");
+	ipc.conveyor2_readpoint  = _fdopen(_open_osfhandle((intptr_t) ipc.conveyor2_ipc[0], _O_RDONLY), "r");
+
+	return;
+}
+#else
 void pipe_ipc_init(void)
 {
 
@@ -44,6 +78,7 @@ void pipe_ipc_init(void)
 
 	return;
 }
+#endif
 
 void task_conveyor1(void)
 {
@@ -55,7 +90,17 @@ void task_conveyor1(void)
 		timing_register(&conveyor1_timing_old);
 		#endif
 
+		#ifdef WINDOWS
+
+		static char output[128];
+		size_t count = sprintf(output, "%lf\n", CONVEYOR1_ITEM_WEIGHT);
+		WriteFile(ipc.conveyor1_ipc[1], output, count, NULL, NULL);
+
+		#else
+
 		dprintf(ipc.conveyor1_ipc[1], "%lf\n", CONVEYOR1_ITEM_WEIGHT);
+
+		#endif
 
 		#ifdef TIMING
 		timing_register(&conveyor1_timing_new);
@@ -77,7 +122,17 @@ void task_conveyor2(void)
 		timing_register(&conveyor2_timing_old);
 		#endif
 
+		#ifdef WINDOWS
+
+		static char output[128];
+		size_t count = sprintf(output, "%lf\n", CONVEYOR2_ITEM_WEIGHT);
+		WriteFile(ipc.conveyor2_ipc[1], output, count, NULL, NULL);
+
+		#else
+
 		dprintf(ipc.conveyor2_ipc[1], "%lf\n", CONVEYOR2_ITEM_WEIGHT);
+
+		#endif
 
 		#ifdef TIMING
 		timing_register(&conveyor2_timing_new);
@@ -132,10 +187,32 @@ int main(void)
 	pthread_create(&tid_leitura_conveyor1, &attr, thread_leitura_conveyor1, NULL);
 	pthread_create(&tid_leitura_conveyor2, &attr, thread_leitura_conveyor2, NULL);
 
+	/* 
+	 * No windows é impossivel fazer um "fork()" como no UNIX.
+	 * Por mais do NT ter suporte a tal operação, a userspace em sí
+	 * não ter suporte. De qualquer modo, aqui criaremos um par de
+	 * threads que larparão como processos. Elas usam o pipe para a comunicação.
+	 */
+	#ifdef WINDOWS
+
+	pthread_t tid_task_conveyor1, tid_task_conveyor2;
+	
+	                                           /* Cast cabuloso pois task_conveyorN
+						    * tem um protótipo diferente do
+						    * requerido pelo pthread_create
+						    * (não buga nada ignorar os valores
+						    * que o pthread passa). */
+	pthread_create(&tid_task_conveyor1, &attr, (void * (*)(void *))task_conveyor1, NULL);
+	pthread_create(&tid_task_conveyor2, &attr, (void * (*)(void *))task_conveyor2, NULL);
+	
+	#else
+
 	int pid_conveyor1 = fork();
 	if (pid_conveyor1 == 0) task_conveyor1();
 	int pid_conveyor2 = fork();
 	if (pid_conveyor2 == 0) task_conveyor2();
+
+	#endif
 
 	while (true)
 	{
