@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include <time.h>
 #include "conveyor_shared.h"
+#ifdef WINDOWS
+#include <windows.h>
+#endif
 
 /* 
  * Definição dos armazenametnos (é uma variavel global 
@@ -60,7 +63,23 @@ struct timespec conveyor2_timing_old, conveyor2_timing_new;
 /* Popula um timespec com o tempo atual */
 void timing_register(struct timespec* t)
 {
+	/*
+	 * No Linux, usamos o clock_gettime monotônico do POSIX,
+	 * que na minha maquina tem uma precisão mágica de 1ns
+	 * (não me pergunte que tipo de magia negra foi usada
+	 * para mensurar uma frequência tão alta, testes pessoais
+	 * meus sugerem que este valor não é mentira.)
+	 *
+	 * No Windows tudo é mais complicado, e tenho certeza que
+	 * o timer nanosegundo deles faz parte de alguma API obscura
+	 * e obtusa, então usei o timespec_get(), que segundo as más
+	 * linguas tem uma precisão (no Windows) de ~100ns.
+	 */
+	#ifdef WINDOWS
+	timespec_get(t, TIME_UTC); 
+	#else
 	clock_gettime(CLOCK_MONOTONIC_RAW, t);
+	#endif
 	return;
 }
 
@@ -90,7 +109,12 @@ void timing_log(const char which, struct timespec* a, struct timespec* b)
 	time_t secs = b->tv_sec  - a->tv_sec;
 	long   nano = b->tv_nsec - a->tv_nsec;
 
-	fprintf(stderr, "%c: %li.%09li\n", which, secs, nano);
+	/* timespec é definido diferente no Windows? */
+	#ifdef WINDOWS
+	fprintf(stderr, "%c: %lli.%09li\n", which, secs, nano);
+	#else
+	fprintf(stderr, "%c: %li.%09li\n",  which, secs, nano);
+	#endif
 
 	return;
 }

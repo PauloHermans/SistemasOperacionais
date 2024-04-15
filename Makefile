@@ -12,7 +12,7 @@ endif
 CC    = cc
 CARGS = -std=c11 -Wall -Wextra $(DEBUG_CARGS) $(TIMING_CARGS)
 LLIBS = -lpthread -lrt
-WLIBS = -lpthread
+WLIBS = -lpthread -lucrt
 
 WINCC = x86_64-w64-mingw32-gcc
 
@@ -34,7 +34,7 @@ conveyor_thread: conveyor_thread.c conveyor_shared.c conveyor_shared.h
 	$(CC) $(CARGS) -o $@ $^ $(LLIBS)
 
 windows_thread: conveyor_thread.c conveyor_shared.c conveyor_shared.h
-	$(WINCC) $(CARGS) -DWINDOWS -o $@ $^ $(WLIBS) -static
+	$(WINCC) $(CARGS) -DWINDOWS -D_UCRT -o $@ $^ $(WLIBS) -static
 
 windows_pipe_threaded: conveyor_pipe_threaded.c conveyor_shared.c conveyor_shared.h
-	$(WINCC) $(CARGS) -DWINDOWS -o $@ $^ $(WLIBS) -static
+	$(WINCC) $(CARGS) -DWINDOWS -D_UCRT -o $@ $^ $(WLIBS) -static
