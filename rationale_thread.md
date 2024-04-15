@@ -18,6 +18,14 @@ Mesmo assim é de notar como, em geral, o timing oscila dentre 900ns e 400ns.
 
 Certamente é a forma mais rápida dentre as duas.
 
+### Histograma
+
+Os timings se agrupam em dois principais grupos: dentre 303ns à 467ns e 795ns à 959ns, que correspondem as três modas.
+
+### Diagrama de Impulsos
+
+Os timings oscilam periodicamente entre as três modas, e apresentam menos ilhas de estabilidade do que o `pipe_problematic`.
+
 # Método
 
 O benchmark foi realizado em um computador de 8GiB RAM DDR3, processador
@@ -31,7 +39,6 @@ O programa foi compilado da seguinte forma:
 ```
 $ gcc -std=c11 -Wall -Wextra -DTIMING -o conveyor_thread conveyor_thread.c conveyor_shared.c -lpthread -lrt
 ```
-
 
 # Dados Brutos
 
