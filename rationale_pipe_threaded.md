@@ -24,6 +24,16 @@ desvio padrão de 11µs, máximo de 62µs, minimo de 8µs.
 neste exemplo pela forma da moda ser bimodal, que também aconteceu com o 
 método de threads.
 
+### Histograma
+
+Ambas modas são observadas no histograma.
+
+### Diagrama de Impulsos
+
+Similar a versão sem thread, os timings oscilam entre dois valores, com
+ocasionais ilhas de estabilidade. Note que nesta versão a diferença entre
+os dois tipos de ilha é menos drastica do que na versão sem threads.
+
 # Método
 
 O benchmark foi realizado em um computador de 8GiB RAM DDR3, processador
