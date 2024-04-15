@@ -46,7 +46,7 @@ a oferecida no Linux (100ns vs 1ns).
 
 Para windows, há uma terceira implementação de pipe que usa uma arquitetura cliente servidor:
 ```
-make windows_pipe_server TIMING=1
+$ make windows_pipe_server TIMING=1
 ```
 Isto gerará três executaveis. Execute o servidor primeiro.
 
