@@ -37,8 +37,8 @@ O código foi feito para ser compilado via o crosscompilador do MinGW do Linux p
 Por favor tenha certeza que o MinGW está instalado.
 
 ```
-$ make windows_conveyor_thread        TIMING=1
-$ make windows_conveyor_pipe_threaded TIMING=1
+$ make windows_thread        TIMING=1
+$ make windows_pipe_threaded TIMING=1
 ```
 
 Note que não há uma versão `pipe_problematic`. Também note que a precisão do timer provido no Windows é pior do que
