@@ -44,6 +44,12 @@ $ make windows_conveyor_pipe_threaded TIMING=1
 Note que não há uma versão `pipe_problematic`. Também note que a precisão do timer provido no Windows é pior do que
 a oferecida no Linux (100ns vs 1ns).
 
+Para windows, há uma terceira implementação de pipe que usa uma arquitetura cliente servidor:
+```
+make windows_pipe_server TIMING=1
+```
+Isto gerará três executaveis. Execute o servidor primeiro.
+
 # Guia Documentação
 
 A documentação se trata de comentários escritos no próprio código, e devem ser lidos na seguinte ordem: `conveyor_shared.h → conveyor_shared.c → conveyor_thread.c → conveyor_pipe_problematic.c → conveyor_pipe_threaded.c`.
