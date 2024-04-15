@@ -2,3 +2,4 @@ conveyor_pipe_threaded
 conveyor_pipe_problematic
 conveyor_thread
 *.txt
+*.exe
