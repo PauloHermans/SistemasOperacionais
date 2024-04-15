@@ -41,7 +41,7 @@ $ make windows_conveyor_thread        TIMING=1
 $ make windows_conveyor_pipe_threaded TIMING=1
 ```
 
-Note que não há uma versão `pipe_problematic`. Também note que a precisão do timer provido no Windows é menor do que
+Note que não há uma versão `pipe_problematic`. Também note que a precisão do timer provido no Windows é pior do que
 a oferecida no Linux (100ns vs 1ns).
 
 # Guia Documentação
