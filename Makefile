@@ -22,7 +22,7 @@ default:
 	@echo 'Please type a target to run.'
 
 clean:
-	rm -vf conveyor_pipe_problematic conveyor_thread conveyor_pipe_threaded windows_pipe_threaded windows_thread windows_pipe_server_*
+	rm -vf conveyor_pipe_problematic conveyor_thread conveyor_pipe_threaded windows_pipe_threaded.exe windows_thread.exe windows_pipe_server_*
 
 conveyor_pipe_problematic: conveyor_pipe_problematic.c conveyor_shared.c conveyor_shared.h
 	$(CC) $(CARGS) -o $@ $^ $(LLIBS)
